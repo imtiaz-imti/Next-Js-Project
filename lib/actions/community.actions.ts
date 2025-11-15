@@ -39,6 +39,7 @@ export async function createCommunity(
 
     // Update User model
     user.communities.push(createdCommunity._id);
+    user.communities = [...new Set(user.communities)]
     await user.save();
 
     return createdCommunity;
