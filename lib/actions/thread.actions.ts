@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import Thread from "../models/thread.model"
 import User from "../models/user.model"
+import Community from "../models/community.model"
 import { connectToDB } from "../mongoose"
 
 interface Params {
@@ -17,6 +18,9 @@ export async function createThread({text,author,communityId,path} : Params){
     await connectToDB()
     const createThread = await Thread.create({text,author})
     await User.findOneAndUpdate({author},{
+      $push : {threads : createThread._id}
+    })
+    await Community.findOneAndUpdate({communityId},{
       $push : {threads : createThread._id}
     })
     revalidatePath(path)
