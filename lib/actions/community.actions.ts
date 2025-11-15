@@ -318,7 +318,7 @@ export async function deleteCommunity(communityId: string) {
     // Remove the community from the 'communities' array for each user
     const updateUserPromises = communityUsers.map((user) => {
       user.communities.pull(deletedCommunity._id);
-      user.threads = user.threads.filter((item : Types.ObjectId) => !futuredeleteThreadIds.includes(item));
+      user.threads = user.threads.filter((item : typeof user.threads[0]) => !futuredeleteThreadIds.includes(item));
       return user.save();
     });
 
