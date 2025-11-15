@@ -15,39 +15,15 @@ interface Params {
 
 export async function createThread({text,author,communityId,path} : Params){
  try {
-    // await connectToDB()
-    // const createThread = await Thread.create({text,author})
-    // await User.findOneAndUpdate({author},{
-    //   $push : {threads : createThread._id}
-    // })
-    // await Community.findOneAndUpdate({communityId},{
-    //   $push : {threads : createThread._id}
-    // })
-    // revalidatePath(path)
-    await connectToDB();
-    const communityIdObject = await Community.findOne(
-      { id: communityId },
-      { _id: 1 }
-    );
-    const createdThread = await Thread.create({
-      text,
-      author,
-      community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
-    });
-
-    // Update User model
-    await User.findByIdAndUpdate(author, {
-      $push: { threads: createdThread._id },
-    });
-
-    if (communityIdObject) {
-      // Update Community model
-      await Community.findByIdAndUpdate(communityIdObject, {
-        $push: { threads: createdThread._id },
-      });
-    }
-
-    revalidatePath(path);
+    await connectToDB()
+    const createThread = await Thread.create({text,author,community : communityId})
+    await User.findOneAndUpdate({author},{
+      $push : {threads : createThread._id}
+    })
+    await Community.findOneAndUpdate({communityId},{
+      $push : {threads : createThread._id}
+    })
+    revalidatePath(path)
   } catch (error) {
     if (error instanceof Error) {
         throw new Error(`Failed to create/update thread ${error.message}`)
