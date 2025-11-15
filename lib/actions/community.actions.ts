@@ -307,7 +307,8 @@ export async function deleteCommunity(communityId: string) {
     if (!deletedCommunity) {
       throw new Error("Community not found");
     }
-
+    const futuredeleteThreads = await Thread.find({ community: deletedCommunity._id });
+    const futuredeleteThreadIds = futuredeleteThreads.map(t => t._id);
     // Delete all threads associated with the community
     await Thread.deleteMany({ community: deletedCommunity._id });
 
@@ -317,6 +318,7 @@ export async function deleteCommunity(communityId: string) {
     // Remove the community from the 'communities' array for each user
     const updateUserPromises = communityUsers.map((user) => {
       user.communities.pull(deletedCommunity._id);
+      user.threads.pull({$in : futuredeleteThreadIds});
       return user.save();
     });
 
