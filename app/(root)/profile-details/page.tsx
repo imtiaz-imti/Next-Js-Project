@@ -1,26 +1,20 @@
 import AccountProfile from "@/components/forms/AccountProfile";
-import { createUser, fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-
+import { fetchUser } from "@/lib/actions/user.actions";
 
 export default async function Page(){
     const user = await currentUser()
-    if(!user)redirect('/sign-in')
-    const userInfo = await fetchUser(user.id)
-    if(!userInfo){
-      console.log('hello')
-      const {id,firstName,lastName,username,imageUrl} = {...user}
-      await createUser(id || '',firstName || '',lastName || '',username || '',imageUrl || '')
-    }  
-    const { id,firstName,lastName,imageUrl,username } = {...user}
+    if(!user)redirect('/sign-in') 
+    const userInfo = await fetchUser(user.id)     
+    const { id,firstName,lastName,username } = {...user}
     const userActive = {
       id : id || '',
       objectId : '',
       username : username || '',
       name : `${firstName}  ${lastName}` || '',
-      bio : '',
-      image : imageUrl || ''
+      bio : userInfo.bio,
+      image : userInfo.image || ''
     }
     return (
        <main className="mx-auto flex flex-col max-w-3xl px-10 py-20">
@@ -29,4 +23,4 @@ export default async function Page(){
           </section>
        </main>  
     )
-} 
+}

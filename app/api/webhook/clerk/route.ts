@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+// /* eslint-disable camelcase */
 // Resource: https://clerk.com/docs/users/sync-data-to-your-backend
 // Above article shows why we need webhooks i.e., to sync data to our backend
 

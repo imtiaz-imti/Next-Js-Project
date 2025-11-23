@@ -1,10 +1,14 @@
+import { fetchAllChildThreads, fetchThreadById } from "@/lib/actions/thread.actions"
+import { formatDateString } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
+import { currentUser } from "@clerk/nextjs/server"
+import { fetchUser, getActivity } from "@/lib/actions/user.actions"
 
 interface props {
     id : string,
-    currentUserId : string,
-    parentId : string | null,
+    currentUserId? : string,
+    parentId? : string | null,
     content : string,
     author : {
         id : string,
@@ -24,7 +28,13 @@ interface props {
     }[]
     isComment? : boolean
 }
-const ThreadCard = ({id,currentUserId,parentId,content,author,community,createdAt,comments,isComment} : props)=>{
+const ThreadCard = async ({id,content,author,community,createdAt,isComment} : props)=>{
+    const user = await currentUser()
+    const userInfo = await fetchUser(user?.id || '')
+    const childThreads = await fetchAllChildThreads(id)
+    const allThread = await getActivity(userInfo._id)
+    const repliedThread = await fetchThreadById(id) 
+    console.log(repliedThread)
     return(
        <article className={`flex flex-col w-full rounded-xl ${isComment ? 'px-0 xs:px-7' : 'bg-dark-2 p-7'}`}>
         <div className="flex items-start justify-between">
@@ -42,24 +52,42 @@ const ThreadCard = ({id,currentUserId,parentId,content,author,community,createdA
                  </Link>
                  <p className="mt-2 text-small-regular text-light-2">{content}</p>
                  <div className="mt-5 flex flex-col gap-3">
-                   <div className="flex gap-3.5">
-                     <Image src='/assets/heart-gray.svg' alt="heart" width={24} height={24}     className="cursor-pointer object-contain"/>
+                   {userInfo?.threads.some((item : typeof userInfo.threads[0])=>item.id.toString() === id.toString() && userInfo?._id.toString() === item.author.toString()) ? <p className="text-gray-1 text-subtle-medium">You’ve created this thread</p> : allThread?.some((item : typeof allThread[0])=>item.id.toString() === id.toString() && item.author?._id.toString() === userInfo?._id.toString()) ? <p className="text-gray-1 text-subtle-medium">You’ve replied on <Link href={`/thread/${repliedThread?.parentId}`} className="text-blue">@thread</Link></p> : <div className="flex gap-3.5">
                      <Link href={`/thread/${id}`}>
                        <Image src='/assets/reply.svg' alt="reply" width={24} height={24}     className="cursor-pointer object-contain"/>
                      </Link>
-                     <Image src='/assets/repost.svg' alt="repost" width={24} height={24}     className="cursor-pointer object-contain"/>
-                     <Image src='/assets/share.svg' alt="share" width={24} height={24}     className="cursor-pointer object-contain"/>
-                   </div>  
-                   {isComment && comments.length > 0 && (
-                     <Link href={`/thread/${id}`}>
-                       <p className="mt-1 text-subtle-medium text-gray-1">{comments.length} replies</p>
+                     <Link href={`/share-thread/${id}`}>
+                       <Image src='/assets/repost.svg' alt="repost" width={24} height={24}     className="cursor-pointer object-contain"/>
                      </Link>
-                   )} 
+                   </div>}  
                  </div>   
                 </div>
                </div>
            </div>
         </div>
+        {/* @ts-expect-error: third-party type definitions are wrong */}
+        {childThreads.children.length > 0 && <Link href={`/thread/${id}`} className="flex items-center gap-8 ml-3 mt-2">
+          {/* @ts-expect-error: third-party type definitions are wrong */}
+          <div className="relative w-5 h-5 flex items-center justify-center overflow-hidden">{childThreads.children.map((item,index)=>(
+            <Image key={index} src={item.author.image} alt="profile photo" className= "rounded-full object-cover" fill/>
+          ))}</div>
+          {/* @ts-expect-error: third-party type definitions are wrong */} 
+          <p className="text-gray-1 text-small-regular">{childThreads.children.length} replies</p>
+        </Link>}
+        {!isComment && community ? (
+          <Link href={`/communities/${community.id}`} className="mt-5 flex items-center">
+            <p className="text-subtle-medium text-gray-1">
+              {formatDateString(createdAt)} - {community.name} Community
+            </p>
+            <div className="relative h-4 w-4 ml-2">
+              <Image src={community.image} alt={community.name} fill className="rounded-full"/>
+            </div>
+          </Link>
+        ) : !isComment && (<div className="mt-5 flex items-center">
+          <p className="text-subtle-medium text-gray-1">
+            {formatDateString(createdAt)}
+          </p>
+        </div>)}
        </article> 
     )
 }

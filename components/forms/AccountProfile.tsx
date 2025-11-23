@@ -11,12 +11,10 @@ import { usePathname, useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
-  Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
   Field,
@@ -84,7 +82,7 @@ export default function AccountProfile({ user }: Props) {
           values.profile_photo = imgRes[0].url
         }
       }
-      await updateUser(user.id, values.username, values.name, values.bio, values.profile_photo, pathname)
+      await updateUser(user.id,values.username, values.name, values.bio, values.profile_photo, pathname)
       if (pathname === '/profile/edit') {
         router.back()
       } else {
@@ -96,14 +94,11 @@ export default function AccountProfile({ user }: Props) {
   }
 
   return (
-    <Card className="w-full sm:max-w-md bg-dark-1">
+    <div className="w-full bg-dark-1">
       <CardHeader>
-        <CardTitle>
-          <h1 className="text-heading2-bold text-light-1">Onboarding</h1>
-        </CardTitle>
         <CardDescription>
           <p className="mt-3 text-base-regular text-light-2">
-            Complete your profile now to use Threads
+            Change your profile details
           </p>
         </CardDescription>
       </CardHeader>
@@ -117,14 +112,14 @@ export default function AccountProfile({ user }: Props) {
               name="profile_photo"
               control={form.control}
               render={({ field, fieldState }) => (
-                <Field className="flex flex-row items-center justify-between">
-                  <FieldLabel className="account-form_image-label">
+                <div className="flex flex-row items-center gap-5">
+                  <div className="relative w-20 h-20 rounded-full">
                     {field.value ? (
-                      <Image src={field.value} alt="profile photo" width={96} height={96} priority className="rounded-full object-contain" />
+                      <Image src={field.value} alt="profile photo" fill className="rounded-full object-cover" />
                     ) : (
                       <Image src="/assets/profile.svg" alt="profile photo" width={24} height={24} className="object-contain" />
                     )}
-                  </FieldLabel>
+                  </div>
                   <Input
                     type="file"
                     accept="image/*"
@@ -133,7 +128,7 @@ export default function AccountProfile({ user }: Props) {
                     onChange={(e) => handleImage(e, field.onChange)}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
+                </div>
               )}
             />
 
@@ -183,11 +178,11 @@ export default function AccountProfile({ user }: Props) {
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
-          <Button type="submit" className="bg-primary-500">
+          <Button type="submit" className="bg-primary-500 w-full">
             Submit
           </Button>
         </CardFooter>
       </form>
-    </Card>
+    </div>
   )
 }

@@ -4,28 +4,21 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { commentValidation } from "@/lib/validations/thread"
 import * as z from "zod"
-import { usePathname, useRouter } from "next/navigation" 
+import { usePathname} from "next/navigation" 
 
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
-  Field,
   FieldError,
   FieldGroup,
-  FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
-import { Textarea } from "../ui/textarea"
-import { updateUser } from "@/lib/actions/user.actions"
-import { addComentToThread, createThread } from "@/lib/actions/thread.actions"
+import { addCommentToThread} from "@/lib/actions/thread.actions"
 interface props {
     threadId : string,
     currentUserImg : string,
@@ -33,7 +26,6 @@ interface props {
 }
 const Comment = ({threadId,currentUserImg,currentUserId} : props)=>{
     const pathname = usePathname()
-    const router = useRouter()
     const form = useForm<z.infer<typeof commentValidation>>({
     resolver: zodResolver(commentValidation),
     defaultValues: {
@@ -41,7 +33,7 @@ const Comment = ({threadId,currentUserImg,currentUserId} : props)=>{
     }
     }) 
     const onSubmit = async(values: z.infer<typeof commentValidation>)=>{
-       await addComentToThread(threadId,values.thread,currentUserId,pathname)
+       await addCommentToThread(threadId,values.thread,currentUserId,pathname)
        form.reset()
     } 
    return(

@@ -5,15 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { threadValidation } from "@/lib/validations/thread"
 import * as z from "zod"
 import { usePathname, useRouter } from "next/navigation" 
+import { useOrganization } from "@clerk/nextjs"
 
 import { Button } from "@/components/ui/button"
 import {
-  Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
   Field,
@@ -21,25 +18,13 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import Image from "next/image"
 import { Textarea } from "../ui/textarea"
-import { updateUser } from "@/lib/actions/user.actions"
 import { createThread } from "@/lib/actions/thread.actions"
 
-interface Props {
-  user: {
-    id: string,
-    objectId: string,
-    username: string,
-    name: string,
-    bio: string,
-    image: string
-  }
-}
 function PostThread({ userId } : {userId : string }){
     const pathname = usePathname()
     const router = useRouter()
+    const { organization } = useOrganization()
     const form = useForm<z.infer<typeof threadValidation>>({
     resolver: zodResolver(threadValidation),
     defaultValues: {
@@ -51,13 +36,13 @@ function PostThread({ userId } : {userId : string }){
       await createThread({
         text : values.thread,
         author : userId,
-        communityId : null,
+        communityId : organization ? organization.id : null,
         path : pathname 
       })
       router.push('/')
     }
    return(
-    <Card className="w-full sm:max-w-md bg-dark-1 mt-10 py-5">
+    <div className="w-full bg-dark-1 mt-10 py-5 border-2 border-light-1">
      <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
       <CardContent>
         <FieldGroup>
@@ -80,12 +65,12 @@ function PostThread({ userId } : {userId : string }){
         <Button type="button" variant="outline" onClick={() => form.reset()}>
           Reset
         </Button>
-        <Button type="submit" className="bg-primary-500">
+        <Button type="submit" className="bg-primary-500 w-full">
           Post Thread
         </Button>
       </CardFooter>
     </form>
-  </Card>
+  </div>
    )
 }
 export default PostThread

@@ -4,17 +4,17 @@ import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { profileTabs } from "@/constants"
 import Image from "next/image"
-import ThreadCard from "@/components/cards/ThreadCard"
-import { fetchThreadsByAuthorId } from "@/lib/actions/thread.actions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ThreadsTab from "@/components/shared/ThreadsTab"
+import SharedTab from "@/components/shared/SharedTab"
 
 const Page = async ({ params } : { params : { id : string } })=>{
   const resolveParams = await params  
   const user = await currentUser()
-  if(!user)return null
-  const userInfo = await fetchUser(resolveParams.id)
-//   if(!userInfo?.onboarded)redirect('/onboarding') 
-  const threadsByAuthorId = await fetchThreadsByAuthorId(userInfo._id) 
-  console.log(threadsByAuthorId)
+  if(!user)redirect('/sign-in')
+  const userInfo = await fetchUser(resolveParams.id === '%24' ? user.id : resolveParams.id)
+  console.log(resolveParams.id)
+  // if(!userInfo?.onboarded)redirect('/onboarding')
   return(
      <section>
         <ProfileHeader
@@ -25,21 +25,51 @@ const Page = async ({ params } : { params : { id : string } })=>{
           image={userInfo?.image}
           bio={userInfo?.bio}
         />
-        <div className="bg-dark-2 mt-10 flex justify-center p-2 rounded-md">
-         <div className="flex w-[70%] justify-between">
-          {profileTabs.map((item,index)=>
-            (<div key={index} className="flex gap-4">
-               <Image src={item.icon} alt={item.label} className="object-cover" width={24} height={24}/> 
-               <p className="text-light-1">{item.value?.charAt(0).toUpperCase() + item.value?.slice(1)}</p>
-               {item.label === 'Threads' && userInfo?.threads?.length > 1 && <div className="bg-light-4 px-2 rounded-sm !text-tiny-medium flex items-center"><p className="text-light-2">{userInfo?.threads?.length}</p></div>}
-            </div>)
-          )}
-         </div>
-        </div>
-        <div className="mt-10 flex flex-col gap-5">
-         {threadsByAuthorId?.map((thread)=> 
-          (<ThreadCard key={thread?._id} id={thread?._id} currentUserId={user?.id || ''} parentId={thread.parentId} content={thread.text} author={thread.author} community={thread.community} createdAt={thread.createdAt} comments={thread.children}/>))}
-        </div>
+        <div className='mt-9'>
+        <Tabs defaultValue='threads' className='w-full'>
+          <TabsList className='tab'>
+            {profileTabs.map((tab) => (
+              <TabsTrigger key={tab.label} value={tab.value} className='tab'>
+                <Image
+                  src={tab.icon}
+                  alt={tab.label}
+                  width={24}
+                  height={24}
+                  className='object-contain'
+                />
+                <p className='max-sm:hidden'>{tab.label}</p>
+
+                {tab.label === "Threads" ? (
+                  <p className='ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2'>
+                    {resolveParams.id === '%24' ? userInfo?.threads.filter((item : typeof userInfo.threads[0])=>userInfo._id?.toString() === item.author?.toString()).length : userInfo?.threads.filter((item : typeof userInfo.threads[0])=>resolveParams.id?.toString() === item.author?.toString()).length}
+                  </p>
+                ) : 
+                  <p className='ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2'>
+                  {resolveParams.id === '%24' ? userInfo?.threads.filter((item : typeof userInfo.threads[0])=>userInfo._id?.toString() !== item.author?.toString()).length : userInfo?.threads.filter((item : typeof userInfo.threads[0])=>resolveParams.id?.toString() !== item.author?.toString()).length}
+                   </p>
+                
+                }
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <TabsContent value='threads' className='w-full text-light-1'>
+            <ThreadsTab
+              currentUserId={user.id}
+              accountId={userInfo?._id}
+              accountType='User'
+            />
+          </TabsContent>
+
+          <TabsContent value='shared' className='w-full text-light-1'>
+            <SharedTab
+              currentUserId={user.id}
+              accountId={userInfo?._id}
+              accountType='User'
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
      </section>
   )
 }

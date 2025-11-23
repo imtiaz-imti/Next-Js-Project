@@ -20,7 +20,7 @@ const Page = async ({ params } : { params : { id : string }})=>{
         <div className="mt-7 w-full">
           <Comment threadId={thread?._id.toString()} currentUserImg={user.imageUrl} currentUserId={userInfo._id.toString()}/>
         </div>
-        <div className="mt-10">
+        <div className="mt-10 flex flex-col gap-10">
           {thread.children.map((childrenItem : typeof thread,index : number)=>
             (<ThreadCard key={index} id={childrenItem?._id} currentUserId={childrenItem?.id || ''} parentId={childrenItem.parentId} content={childrenItem.text} author={childrenItem.author} community={childrenItem.community} createdAt={childrenItem.createdAt} comments={childrenItem.children} isComment/>)  
           )}

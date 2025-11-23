@@ -7,7 +7,7 @@ import RightSideBar from "@/components/shared/RightSideBar"
 import BottomBar from "@/components/shared/BottomBar"
 
 export const metadata = {
-    title : 'Threads',
+    title : 'Next Js Project',
     description : 'A Next.js 13 Meta Threads Application'  
 }
 
