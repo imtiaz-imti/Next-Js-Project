@@ -1,11 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
-import { connectToDB } from "../mongoose";
-
-import User from "../models/user.model";
-import Thread from "../models/thread.model";
+import { revalidatePath } from "next/cache"
+import Thread from "../models/thread.model"
+import User from "../models/user.model"
+import { connectToDB } from "../mongoose"
 import Community from "../models/community.model";
 
 interface Params {
@@ -55,33 +53,14 @@ export async function fetchThreads(pageNumber = 1, pageSize = 20) {
   return { threads, isNext };
 }
 
-export async function createThread({ text, author, communityId, path }: Params
-) {
-  try {
-    connectToDB();
-    const communityIdObject = await Community.findOne(
-      { id: communityId },
-      { _id: 1 }
-    );
-    const createdThread = await Thread.create({
-      text,
-      author,
-      community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
-    });
-
-    // Update User model
-    await User.findByIdAndUpdate(author, {
-      $push: { threads: createdThread._id },
-    });
-
-    if (communityIdObject) {
-      // Update Community model
-      await Community.findByIdAndUpdate(communityIdObject, {
-        $push: { threads: createdThread._id },
-      });
-    }
-
-    revalidatePath(path);
+export async function createThread({text,author,communityId,path} : Params){
+ try {
+    await connectToDB()
+    const createThread = await Thread.create({text,author})
+    await User.findOneAndUpdate({author},{
+      $push : {threads : createThread._id}
+    })
+    revalidatePath(path)
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to create thread ${error.message}`)
