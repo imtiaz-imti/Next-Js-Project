@@ -1,44 +1,75 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+'use client'
 
-import Searchbar from "@/components/shared/Searchbar";
-import Pagination from "@/components/shared/Pagination";
-import CommunityCard from "@/components/cards/CommunityCard";
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import { allCommunity, onSearch,user} from "@/lib/searchValue"
+import { redirect } from "next/navigation"
+import CommunityCard from "@/components/cards/CommunityCard"
 
-import { fetchUser } from "@/lib/actions/user.actions";
-import { fetchCommunities } from "@/lib/actions/community.actions";
+interface props {
+  users? : [{
+     id : string,
+     name : string,
+     username : string,
+     image : string
+  }],
+  communities? : [{
+    id : string,
+    name : string,
+    username : string,
+    image : string,
+    bio : string,
+    members: {
+      image: string;
+    }[]
+ }]
+}
 
-async function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) {
-  const user = await currentUser();
-  if (!user) return null;
+interface propsCom{
+  id : string,
+  name : string,
+  username : string,
+  image : string,
+  bio : string,
+  members: {
+    image: string;
+  }[]
+}
+const Page = ()=>{  
+  if(!user)redirect('/sign-in')
+  const [searchData,setSearchData] = useState<props>()
+  const [communitiesData,setCommunitiesData] = useState<propsCom[]>()
+  const [message,setMessage] = useState('') 
+  useEffect(()=>{
+     async function allData(){
+       const data = await allCommunity()
+       setCommunitiesData(data)
+     }
+     allData()
+  },[])
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); // prevent page reload
 
-  const userInfo = await fetchUser(user.id);
-  if (!userInfo?.onboarded) redirect("/onboarding");
+    const formData = new FormData(e.currentTarget);
 
-  const result = await fetchCommunities({
-    searchString: searchParams.q,
-    pageNumber: searchParams?.page ? +searchParams.page : 1,
-    pageSize: 25,
-  });
-
-  return (
-    <>
-      <h1 className='head-text'>Communities</h1>
-
-      <div className='mt-5'>
-        <Searchbar routeType='communities' />
-      </div>
-
-      <section className='mt-9 flex flex-wrap gap-4'>
-        {result.communities.length === 0 ? (
-          <p className='no-result'>No Result</p>
-        ) : (
-          <>
-            {result.communities.map((community) => (
+    // Call the server action manually
+    setCommunitiesData([])
+    const data = await onSearch(formData);
+    setSearchData(data)
+    if(data?.communities.length === 0){
+      setMessage('No communities found')
+    }
+  }      
+  return(
+     <section>
+        <h1 className="head-text mb-10">Communities</h1>
+        <form className="bg-white flex rounded-lg pl-4" onSubmit={handleSubmit}>
+          <input name='searchValue' type="text" placeholder='search community' autoComplete='off' className="border-none outline-none w-[95%] h-[50px]"/>
+          <button type="submit" className="bg-gray-1 w-[10%] rounded-r-lg flex items-center justify-center cursor-pointer"><Image src='/icons8-search-30.png' alt="search" width={24} height={24}/></button>
+        </form>
+        <div className="mt-14 flex flex-wrap gap-9">
+          {(searchData?.communities?.length || 0) === 0 ? ((communitiesData?.length || 0) === 0 ? <p className="no-result">{message}</p> : <>
+          {communitiesData?.map((community) => (
               <CommunityCard
                 key={community.id}
                 id={community.id}
@@ -49,17 +80,23 @@ async function Page({
                 members={community.members}
               />
             ))}
-          </>
-        )}
-      </section>
-
-      <Pagination
-        path='communities'
-        pageNumber={searchParams?.page ? +searchParams.page : 1}
-        isNext={result.isNext}
-      />
-    </>
-  );
+          </>) : <>
+            {searchData?.communities?.map((community) => (
+              <CommunityCard
+                key={community.id}
+                id={community.id}
+                name={community.name}
+                username={community.username}
+                imgUrl={community.image}
+                bio={community.bio}
+                members={community.members}
+              />
+            ))}
+            </>
+          }
+        </div>
+     </section>
+  )
 }
 
-export default Page;
+export default Page

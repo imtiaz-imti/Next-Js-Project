@@ -13,8 +13,6 @@ const Page = async ({ params } : { params : { id : string } })=>{
   const user = await currentUser()
   if(!user)redirect('/sign-in')
   const userInfo = await fetchUser(resolveParams.id === '%24' ? user.id : resolveParams.id)
-  console.log(resolveParams.id)
-  // if(!userInfo?.onboarded)redirect('/onboarding')
   return(
      <section>
         <ProfileHeader

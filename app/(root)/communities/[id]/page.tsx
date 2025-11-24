@@ -4,7 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import { communityTabs } from "@/constants";
 
 import UserCard from "@/components/cards/UserCard";
-import ThreadsTab from "@/components/shared/ThreadsTab";
 import ProfileHeader from "@/components/shared/ProfileHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -80,14 +79,6 @@ async function Page({ params }: { params: { id: string } }) {
                 />
               ))}
             </section>
-          </TabsContent>
-
-          <TabsContent value='requests' className='w-full text-light-1'>
-            <CommunityTab
-              currentUserId={user.id}
-              accountId={communityDetails._id}
-              accountType='Community'
-            />
           </TabsContent>
         </Tabs>
       </div>

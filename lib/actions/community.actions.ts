@@ -119,6 +119,7 @@ export async function fetchCommunities({
   try {
     connectToDB();
 
+
     // Calculate the number of communities to skip based on the page number and page size.
     const skipAmount = (pageNumber - 1) * pageSize;
 
@@ -333,6 +334,16 @@ export async function deleteCommunity(communityId: string) {
     return deletedCommunity;
   } catch (error) {
     console.error("Error deleting community: ", error);
+    throw error;
+  }
+}
+
+export async function fetchEveryCommunities(userId : string){
+  try {
+    connectToDB();
+    return await Community.find({members:{$ne:userId}}).populate("members")
+  } catch (error) {
+    console.error("Error fetching communities:", error);
     throw error;
   }
 }

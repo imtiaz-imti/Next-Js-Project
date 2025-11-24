@@ -40,11 +40,10 @@ const Page = ({ params } : { params : { id : string } })=>{
   },[]);
   const [message,setMessage] = useState('') 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); // prevent page reload
+    e.preventDefault(); 
 
     const formData = new FormData(e.currentTarget);
 
-    // Call the server action manually
     const data = await onSearch(formData);
     setSearchData(data)
     if(data?.users.length === 0){

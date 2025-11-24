@@ -3,7 +3,7 @@ import { Inter } from "next/font/google"
 import '../globals.css'
 
 export const metadata = {
-    title : 'Threads',
+    title : 'Next Js Project',
     description : 'A Next.js 13 Meta Threads Application'  
 }
 

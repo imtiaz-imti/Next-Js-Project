@@ -97,7 +97,7 @@ export default function AccountProfile({ user }: Props) {
     <div className="w-full bg-dark-1">
       <CardHeader>
         <CardDescription>
-          <p className="mt-3 text-base-regular text-light-2">
+          <p className="mt-3 text-base-regular text-light-2 max-sm:text-[12px]">
             Change your profile details
           </p>
         </CardDescription>
@@ -113,7 +113,7 @@ export default function AccountProfile({ user }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <div className="flex flex-row items-center gap-5">
-                  <div className="relative w-20 h-20 rounded-full">
+                  <div className="relative w-20 h-20 rounded-full max-sm:w-10 max-sm:h-10">
                     {field.value ? (
                       <Image src={field.value} alt="profile photo" fill className="rounded-full object-cover" />
                     ) : (
@@ -124,7 +124,7 @@ export default function AccountProfile({ user }: Props) {
                     type="file"
                     accept="image/*"
                     placeholder="Upload a photo"
-                    className="account-form_image-input"
+                    className="account-form_image-input max-sm:text-[15px]"
                     onChange={(e) => handleImage(e, field.onChange)}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -138,8 +138,8 @@ export default function AccountProfile({ user }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field className="flex items-center gap-3 w-full">
-                  <FieldLabel className="text-base-semibold text-light-2">Name</FieldLabel>
-                  <Input type="text" className="account-form_input no-focus" {...field} />
+                  <FieldLabel className="text-base-semibold text-light-2 max-sm:text-[10px]">Name</FieldLabel>
+                  <Input type="text" className="account-form_input no-focus max-sm:text-[10px]" {...field} />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -151,8 +151,8 @@ export default function AccountProfile({ user }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field className="flex items-center gap-3 w-full">
-                  <FieldLabel className="text-base-semibold text-light-2">Username</FieldLabel>
-                  <Input type="text" className="account-form_input no-focus" {...field} />
+                  <FieldLabel className="text-base-semibold text-light-2 max-sm:text-[10px]">Username</FieldLabel>
+                  <Input type="text" className="account-form_input no-focus max-sm:text-[10px]" {...field} />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -164,8 +164,8 @@ export default function AccountProfile({ user }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field className="flex items-center gap-3 w-full">
-                  <FieldLabel className="text-base-semibold text-light-2">Bio</FieldLabel>
-                  <Textarea rows={10} className="account-form_input no-focus" {...field} />
+                  <FieldLabel className="text-base-semibold text-light-2 max-sm:text-[10px]">Bio</FieldLabel>
+                  <Textarea rows={10} className="account-form_input no-focus max-sm:text-[10px]" {...field} />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

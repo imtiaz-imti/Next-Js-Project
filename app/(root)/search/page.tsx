@@ -9,7 +9,7 @@ import CommunityCard from "@/components/cards/CommunityCard"
 
 interface props {
   users : [{
-     id : string,
+     _id : string,
      name : string,
      username : string,
      image : string
@@ -50,7 +50,7 @@ const Page = ()=>{
         </form>
         <div className="mt-14 flex flex-col gap-9">
           {(searchData?.users?.length || 0) === 0 && (searchData?.communities?.length || 0) === 0 ? (<p className="no-result">{message}</p>) : <>
-            {searchData?.users?.map((person)=>(<UserCard key={person.id} id={person.id} name={person.name} username={person.username} imgUrl={person.image} personType='User' />))}
+            {searchData?.users?.map((person)=>(<UserCard key={person._id} id={person._id} name={person.name} username={person.username} imgUrl={person.image} personType='User' />))}
             {searchData?.communities?.map((community) => (
               <CommunityCard
                 key={community.id}
