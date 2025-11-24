@@ -70,8 +70,8 @@ async function Page({ params }: { params: { id: string } }) {
             <section className='mt-9 flex flex-col gap-10'>
               {communityDetails.members.map((member: typeof communityDetails.members[0]) => (
                 <UserCard
-                  key={member.id}
-                  id={member.id}
+                  key={member._id}
+                  id={member._id}
                   name={member.name}
                   username={member.username}
                   imgUrl={member.image}
