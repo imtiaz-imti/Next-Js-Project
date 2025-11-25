@@ -1,4 +1,4 @@
-# 🚀 Modern Community Platform Project
+# 🚀 Next Js Project
 
 ### 🔗 Live Link to My Site  
 https://social-connection-application.vercel.app
