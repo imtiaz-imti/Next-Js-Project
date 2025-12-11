@@ -1,8 +1,5 @@
 # 🚀 Next Js Project
 
-### 🔗 Live Link to My Site  
-https://social-connection-application.vercel.app
-
 A fully-featured, high-performance community platform built with **Next.js**, **MongoDB**, **Clerk**, and a powerful modern UI stack. Designed for scalability, responsiveness, and real-time interactions.
 
 ---
